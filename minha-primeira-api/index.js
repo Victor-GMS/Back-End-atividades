@@ -9,7 +9,10 @@ const app = express();//primeiro pillar: instancia do express
  * dsAutor -> string
  * fgDisponivel -> boolean
  */
-let livros = []//banco de dados
+let livros = [
+    {idLivro: 1, dsTitulo: "as cronicas de narnia", dsAutor: " C S Lewis", fgDisponivel: true}
+]
+//banco de dados
 //rota:
 //metodo + caminho + funcao
 app.get('/', (req,res) => {
@@ -17,8 +20,14 @@ app.get('/', (req,res) => {
 })
 
 app.get('/livros', (req, res) => {//segundo pilar: rota
-    res.send("Hello world");
-    console.log('Victor chamando servidor na /livros')
+    res.json(livros);
+});
+app.get(`/livros/:id` , (req,res) => {
+    console.log(req.params.id)
+    const id = parseInt(req.params.id)
+    if (isNaN(id)){
+        res.status(400).json({mensagem: "o parametro presisa ser um numero valido"})
+    }
 });
 
 app.listen(3000);//terceiro pillar: porta a ser ouvida
