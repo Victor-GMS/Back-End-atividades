@@ -1,12 +1,19 @@
 import express from "express";
 
+
+
+
+function validaParametro( parametro_a_ser_validado){
+  const numero = parseInt(parametro_a_ser_validado)
+  return isNaN(numero);
+}
 const app = express();//Primeiro pilar: instancia do express
 app.use(express.json())
 const PORT = 3000;
 
 let ultimo_id = 1
 let livros = [
-  { id: 1, dsTitulo: "As cronicas de narnia", dsAutor: "C.S. Lewis" },
+  { id: 1, dsTitulo: "As cronicas de narnia", dsAutor: "C.S. Lewis", fgDisponivel: true },
 ]; // banco de dados
 
 // metodos + caminhos + funcção
@@ -19,8 +26,7 @@ app.get("/livros", (req, res) => {
 });
 
 app.get("/livros/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
+  if (!validaParametro(id)) {
     return res
       .status(400)
       .json({ mensagem: "o parametro deve ser um numero valido" });
@@ -48,12 +54,12 @@ app.post("/livros", (req,res) => {
         .json({mensagem: "dados faltando, verifique autor e titulo"})
     }
 
-    let id_novo = ultimo_id +1
-    ultimo_id++
+    let id_novo = ultimo_id +1;
+    ultimo_id++;
 
 
     let novo_livro = {
-        idLivro: id_novo,
+        id: id_novo,
         fgDisponivel: true,
         dsTitulo: titulo_enviado,
         dsAutor: autor_enviado,
@@ -63,9 +69,41 @@ app.post("/livros", (req,res) => {
     res.status(201).json(novo_livro)
 })
 
+app.patch('/livros/:id', (req,res) =>{
+  const id = parseInt(req.params.id)
+  const novo_titulo = req.body.dsTitulo;
+  const novo_autor = req.body.dsAutor;
+
+
+  if(isNaN(id)) {
+    return res
+    .status(400)
+    .json({mensagem: "indentificador presisa ser um numero valido"})
+  }
+
+  let index_livro = livros.findIndex((livro)=> {
+    return livro.id === id;
+  })
+
+  if (index_livro ===-1) {
+    return res.sendStatus(404);
+  }
+
+  let livro_a_ser_atualizado = livros[index_livro];
+  console.log("Livro antes de atualizar")
+  console.log(livro_a_ser_atualizado)
+
+  if (novo_autor !==undefined ) livro_a_ser_atualizado.dsAutor = novo_autor;
+  if (novo_titulo !==undefined) livro_a_ser_atualizado.dsTitulo = novo_titulo;
+  res.json(livro_a_ser_atualizado);
+  console.log("Livro depois de atuaizar")
+  console.log(livro_a_ser_atualizado)
+});
+
+
 app.listen(PORT); // porta a ser ouvida
 
-/*
+/* 
 cadastrarm livros
 post
 
