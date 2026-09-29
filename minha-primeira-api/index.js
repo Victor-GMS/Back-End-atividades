@@ -100,6 +100,47 @@ app.patch('/livros/:id', (req,res) =>{
   console.log(livro_a_ser_atualizado)
 });
 
+app.patch("/livros/:id/emprestar", (req,res) => {
+  const id = parseInt(req.params.id)
+  let esta_disponivel = req.body.fgDisponivel;
+
+  let index_livro = livros.findIndex((livro)=> {
+    return livro.id === id;
+  })
+  
+  if (index_livro ===-1) {
+    return res.sendStatus(404);
+  }
+
+
+  esta_disponivel = false
+
+  livros[index_livro].fgDisponivel = esta_disponivel;
+  res.json(livros[index_livro]);
+  res.status(200).json(livro_a_ser_atualizado)
+})
+
+
+
+app.patch("/livros/:id/devolver", (req,res)=> {
+  const id = parseInt(req.params.id)
+  let esta_disponivel = req.body.fgDisponivel;
+
+  let index_livro = livros.findIndex((livro)=> {
+    return livro.id === id;
+  })
+  
+  if (index_livro ===-1) {
+    return res.sendStatus(404);
+  }
+  esta_disponivel = true
+
+  livros[index_livro].fgDisponivel = esta_disponivel;
+  res.json(livros[index_livro]);
+  res.status(200).json(livro_a_ser_atualizado)
+
+})
+
 
 app.listen(PORT); // porta a ser ouvida
 
